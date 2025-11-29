@@ -9,7 +9,7 @@ const rentalForm = document.getElementById('rental-form');
 
 
 function displayCars(carsToDisplay) {
-    // Clear any previous content in the container
+
     carListContainer.innerHTML = '';
 
     if (carsToDisplay.length === 0) {
