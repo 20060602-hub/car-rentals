@@ -35,20 +35,3 @@ function displayCars(carsToDisplay) {
     });
 }
 
-rentalForm.addEventListener('submit', function(event) {
-    
-    event.preventDefault();
-
-    console.log('Search button clicked! Dates/Location captured.');
-    
-    displayCars(carInventory);
-});
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    
-    carListContainer.innerHTML = '';
-    
-    
-    displayCars(carInventory);
-});
