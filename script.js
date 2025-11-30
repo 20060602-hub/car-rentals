@@ -17,21 +17,4 @@ function displayCars(carsToDisplay) {
         return;
     }
 
-    carsToDisplay.forEach(car => {
-    
-        const carCard = document.createElement('div');
-        carCard.classList.add('car-card'); 
-
-        
-        carCard.innerHTML = `
-            <h3>${car.make} ${car.model}</h3>
-            <p>Type: ${car.type}</p>
-            <p class="price">$${car.pricePerDay} / day</p>
-            <button class="rent-button" data-car-id="${car.id}">Rent Now</button>
-        `;
-
-        
-        carListContainer.appendChild(carCard);
-    });
-}
 
