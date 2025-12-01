@@ -19,3 +19,23 @@ export const sendOtpEmail = async (to, otp) => {
     text: `Your OTP is: ${otp}`,
   });
 };
+cars = {
+    1: {"model": "Toyota", "rate": 40, "available": True},
+    2: {"model": "Honda", "rate": 50, "available": True},
+    3: {"model": "BMW", "rate": 120, "available": True},
+}
+
+print("Available Cars:")
+for cid, car in cars.items():
+    print(f"{cid}. {car['model']} - ${car['rate']}/day")
+
+car_id = int(input("\nEnter car ID to rent: "))
+days = int(input("Enter number of days: "))
+
+if cars[car_id]["available"]:
+    total = cars[car_id]["rate"] * days
+    cars[car_id]["available"] = False
+    print(f"\nYou rented a {cars[car_id]['model']} for {days} days.")
+    print(f"Total cost: ${total}")
+else:
+    print("Car not available!")
