@@ -1,4 +1,29 @@
 
+import express from 'express';
+import cors from 'cors';  // Import CORS
+import dotenv from 'dotenv';
+import { Server } from 'socket.io';
+import http from 'http';
+import mongoose from 'mongoose';
+
+import authRoutes from './routes/authRoutes.js';
+import messageRoutes from './routes/messageRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import aesRoutes from './routes/aesRoutes.js';
+dotenv.config();
+
+const app = express();
+const server = http.createServer(app);
+
+// Update CORS configuration
+const FRONTEND_ORIGIN = 'https://secure-chat-group.vercel.app';
+
+
+app.use(cors({
+  origin: FRONTEND_ORIGIN,
+  methods: ['GET', 'POST'],
+  credentials: true,  // Allow credentials (cookies, authorization headers)
+}));
 
 
 
