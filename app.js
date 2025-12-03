@@ -118,3 +118,84 @@ public class Rental {
         return days;
     }
 }
+
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        CarRentalSystem rentalSystem = new CarRentalSystem();
+        Scanner scanner = new Scanner(System.in);
+
+        // 1. Add some initial cars
+        rentalSystem.addCar(new Car("C001", "Toyota", "Camry", 50.0));
+        rentalSystem.addCar(new Car("C002", "Honda", "CRV", 80.0));
+        rentalSystem.addCar(new Car("C003", "Mercedes", "C-Class", 150.0));
+
+        // --- Main Loop ---
+        while (true) {
+            System.out.println("\n== Car Rental System Menu ==");
+            System.out.println("1. Rent a Car");
+            System.out.println("2. Return a Car");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            if (choice == 1) {
+                // --- Rent a Car ---
+                rentalSystem.displayAvailableCars();
+                System.out.print("Enter the car ID you want to rent: ");
+                String carId = scanner.nextLine();
+
+                Car selectedCar = findCarById(rentalSystem, carId);
+
+                if (selectedCar != null && selectedCar.isAvailable()) {
+                    System.out.print("Enter your name: ");
+                    String customerName = scanner.nextLine();
+                    System.out.print("Enter rental days: ");
+                    int rentalDays = scanner.nextInt();
+                    scanner.nextLine(); 
+
+                    Customer newCustomer = new Customer("CUST" + System.currentTimeMillis(), customerName);
+                    rentalSystem.rentCar(selectedCar, newCustomer, rentalDays);
+                } else {
+                    System.out.println("\nInvalid car selection or car is already rented.");
+                }
+
+            } else if (choice == 2) {
+                // --- Return a Car ---
+                System.out.print("Enter the car ID you are returning: ");
+                String carId = scanner.nextLine();
+
+                Car carToReturn = findCarById(rentalSystem, carId);
+
+                if (carToReturn != null && !carToReturn.isAvailable()) {
+                    rentalSystem.returnCar(carToReturn);
+                } else {
+                    System.out.println("\nInvalid car ID or car was not rented.");
+                }
+            } else if (choice == 3) {
+                // --- Exit ---
+                System.out.println("\nThank you for using the Car Rental System!");
+                break;
+            } else {
+                System.out.println("\nInvalid choice. Please enter 1, 2, or 3.");
+            }
+        }
+
+        scanner.close();
+    }
+    
+    /**
+     * Helper method to search for a Car object by its ID.
+     */
+    private static Car findCarById(CarRentalSystem system, String carId) {
+        for (Car car : system.cars) {
+            if (car.getCarId().equals(carId)) {
+                return car;
+            }
+        }
+        return null;
+    }
+}
