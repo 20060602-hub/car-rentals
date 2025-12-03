@@ -199,3 +199,68 @@ public class Main {
         return null;
     }
 }
+import java.util.ArrayList;
+import java.util.List;
+
+public class CarRentalSystem {
+    private List<Car> cars;
+    private List<Rental> rentals;
+
+    public CarRentalSystem() {
+        cars = new ArrayList<>();
+        rentals = new ArrayList<>();
+    }
+
+    public void addCar(Car car) {
+        cars.add(car);
+    }
+
+    public void displayAvailableCars() {
+        System.out.println("\n== Available Cars ==");
+        if (cars.isEmpty()) {
+            System.out.println("No cars available in the system.");
+            return;
+        }
+
+        for (Car car : cars) {
+            if (car.isAvailable()) {
+                System.out.println(car);
+            }
+        }
+    }
+
+    public void rentCar(Car car, Customer customer, int days) {
+        if (car.isAvailable()) {
+            car.setAvailable(false);
+            Rental rental = new Rental(car, customer, days);
+            rentals.add(rental);
+            System.out.println("\nRental Successful!");
+            System.out.println("Customer: " + customer.getName());
+            System.out.println("Car: " + car.getBrand() + " " + car.getModel());
+            System.out.println("Rental Days: " + days);
+            System.out.printf("Total Cost: $%.2f%n", car.calculatePrice(days));
+        } else {
+            System.out.println("\nError: Car is currently not available for rent.");
+        }
+    }
+
+    public void returnCar(Car car) {
+        car.setAvailable(true);
+        Rental rentalToRemove = null;
+        
+        // Find and remove the corresponding rental
+        for (Rental rental : rentals) {
+            if (rental.getCar().equals(car)) {
+                rentalToRemove = rental;
+                break;
+            }
+        }
+
+        if (rentalToRemove != null) {
+            rentals.remove(rentalToRemove);
+            System.out.println("\nCar returned successfully. Thank you, " + rentalToRemove.getCustomer().getName() + "!");
+        } else {
+            System.out.println("\nError: Car was not found in active rentals.");
+        }
+    }
+}
