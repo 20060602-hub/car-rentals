@@ -1,3 +1,4 @@
+
 /* General Reset and Base Styles */
 * {
     margin: 0;
@@ -96,5 +97,74 @@ header nav ul li a:hover {
     flex: 1 1 200px; /* Allows inputs to wrap and grow/shrink */
     display: flex;
     flex-direction: column;
+}
+
+.form-group input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.search-button {
+    flex: 1 1 100%; /* Takes full width on its row */
+    padding: 12px;
+    background-color: #ffc107;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.search-button:hover {
+    background-color: #e0a800;
+}
+
+/* --- Featured Vehicles --- */
+.featured-vehicles h2 {
+    text-align: center;
+    color: #007bff;
+    margin-bottom: 30px;
+}
+
+.vehicle-list {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.vehicle-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    flex: 1 1 250px;
+    min-height: 180px;
+    transition: transform 0.2s;
+}
+
+.vehicle-card:hover {
+    transform: translateY(-5px);
+}
+
+.vehicle-card h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.vehicle-card a {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 15px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
 }
 
