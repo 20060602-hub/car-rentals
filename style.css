@@ -1,1 +1,100 @@
+/* General Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* Container for page content */
+main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* --- Header and Navigation --- */
+header {
+    background: #007bff; /* Primary Brand Color (Blue) */
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    font-size: 1.8em;
+}
+
+header nav ul {
+    list-style: none;
+    display: flex;
+}
+
+header nav ul li {
+    margin-left: 20px;
+}
+
+header nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+header nav ul li a:hover {
+    color: #ffc107; /* Secondary Brand Color (Yellow) */
+}
+
+.user-actions a {
+    color: white;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+/* --- Hero Section and Form --- */
+.hero {
+    background: url('hero-bg.jpg') no-repeat center center/cover; /* Placeholder for a background image */
+    background-color: #333;
+    color: white;
+    padding: 80px 40px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.booking-form-container {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 8px;
+    margin-top: 30px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.booking-form-container h3 {
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+#rental-search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.form-group {
+    flex: 1 1 200px; /* Allows inputs to wrap and grow/shrink */
+    display: flex;
+    flex-direction: column;
+}
 
