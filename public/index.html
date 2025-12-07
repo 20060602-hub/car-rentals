@@ -1,0 +1,532 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Barbershop Booking</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    /* Simple, clean layout */
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --muted: #666;
+      --accent: #0b74de;
+      --danger: #e74c3c;
+    }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--bg);
+      color: #222;
+      margin: 20px;
+      line-height: 1.4;
+    }
+    h1 { margin: 0 0 12px; font-size: 28px; }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .card {
+      background: var(--card);
+      padding: 14px;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(20,20,30,0.05);
+    }
+    .section-title { font-size: 18px; margin: 0 0 8px; }
+    label { display:block; font-size: 13px; color: var(--muted); margin-top:8px; }
+    input[type=text], input[type=number], input[type=date], input[type=time], select {
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top:6px;
+    }
+    .row { display:flex; gap:8px; }
+    .row > * { flex:1; }
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button.secondary { background: #666; }
+    button.danger { background: var(--danger); }
+    ul { padding-left: 18px; margin-top: 8px; }
+    li.item { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px dashed #f0f0f0; }
+    .meta { color: var(--muted); font-size:13px; }
+    .controls { display:flex; gap:6px; }
+    .notice { padding:10px; background:#fff8e1; border:1px solid #ffecb3; border-radius:6px; margin-bottom:10px; color:#8a6d12 }
+    .full-width { grid-column: 1 / -1; }
+    @media (max-width:800px) {
+      .container { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Barbershop Booking </h1>
+
+  <div class="container">
+    <!-- Customers -->
+    <div class="card">
+      <div class="section-title">Customers</div>
+      <div id="custNotice" class="notice" style="display:none"></div>
+
+      <div id="customerForm">
+        <label>Name</label>
+        <input id="custName" type="text" placeholder="Full name">
+        <label>Phone</label>
+        <input id="custPhone" type="text" placeholder="Phone (optional)">
+        <div style="margin-top:8px">
+          <button id="addCustBtn">Add Customer</button>
+          <button id="saveCustBtn" style="display:none" class="secondary">Save</button>
+          <button id="cancelCustBtn" style="display:none" class="secondary">Cancel</button>
+        </div>
+      </div>
+
+      <h4 style="margin-top:12px">All customers</h4>
+      <ul id="custList"></ul>
+    </div>
+
+    <!-- Services -->
+    <div class="card">
+      <div class="section-title">Services</div>
+      <div id="servNotice" class="notice" style="display:none"></div>
+
+      <div id="serviceForm">
+        <label>Title</label>
+        <input id="servTitle" type="text" placeholder="e.g. Men's Haircut">
+        <div class="row">
+          <div>
+            <label>Duration (min)</label>
+            <input id="servDuration" type="number" placeholder="30">
+          </div>
+          <div>
+            <label>Price</label>
+            <input id="servPrice" type="number" placeholder="15">
+          </div>
+        </div>
+        <div style="margin-top:8px">
+          <button id="addServBtn">Add Service</button>
+          <button id="saveServBtn" style="display:none" class="secondary">Save</button>
+          <button id="cancelServBtn" style="display:none" class="secondary">Cancel</button>
+        </div>
+      </div>
+
+      <h4 style="margin-top:12px">All services</h4>
+      <ul id="servList"></ul>
+    </div>
+
+    <!-- Appointments (full width) -->
+    <div class="card full-width">
+      <div class="section-title">Appointments</div>
+      <div id="apNotice" class="notice" style="display:none"></div>
+
+      <div id="appointmentForm" style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div style="flex: 2 1 200px;">
+          <label>Customer</label>
+          <select id="apCust"></select>
+        </div>
+        <div style="flex: 2 1 200px;">
+          <label>Service</label>
+          <select id="apServ"></select>
+        </div>
+        <div style="flex: 1 1 150px;">
+          <label>Date</label>
+          <input id="apDate" type="date">
+        </div>
+        <div style="flex: 1 1 150px;">
+          <label>Time</label>
+          <!-- time input may be unsupported on some browsers; we have a fallback text input -->
+          <input id="apTime" type="time" placeholder="HH:MM">
+          <input id="apTimeText" type="text" placeholder="HH:MM (fallback)" style="display:none;margin-top:6px">
+        </div>
+
+        <div style="align-self:end;">
+          <button id="addApBtn">Book</button>
+          <button id="saveApBtn" style="display:none" class="secondary">Save</button>
+          <button id="cancelApBtn" style="display:none" class="secondary">Cancel</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label>Show appointments for date</label>
+        <div class="row" style="align-items:center;">
+          <input id="filterDate" type="date">
+          <button id="filterBtn" class="secondary">Filter</button>
+          <button id="allBtn" class="secondary">Show All</button>
+        </div>
+      </div>
+
+      <h4 style="margin-top:12px">Appointments (by date)</h4>
+      <ul id="apList"></ul>
+    </div>
+  </div>
+
+<script>
+/* ---------- Utilities ---------- */
+const apiFetch = async (path, opts={}) => {
+  const res = await fetch('/api/' + path, opts);
+  const text = await res.text();
+  let data;
+  try { data = JSON.parse(text); } catch(e) { data = text; }
+  return { status: res.status, body: data };
+};
+
+function showNotice(id, msg, timeout=3500) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = 'block';
+  if (timeout) setTimeout(()=> el.style.display = 'none', timeout);
+}
+
+function supportsInputType(t) {
+  const i = document.createElement('input');
+  i.setAttribute('type', t);
+  return i.type === t;
+}
+
+/* ---------- Fallback for time input ---------- */
+(function timeFallback() {
+  const support = supportsInputType('time');
+  if (!support) {
+    document.getElementById('apTime').style.display = 'none';
+    document.getElementById('apTimeText').style.display = 'block';
+  }
+})();
+
+/* ---------- Rendering helpers ---------- */
+async function refreshCustomers() {
+  const { body } = await apiFetch('customers');
+  const list = document.getElementById('custList');
+  const select = document.getElementById('apCust');
+  list.innerHTML = '';
+  select.innerHTML = '<option value="">-- select customer --</option>';
+  body.forEach(c => {
+    const li = document.createElement('li');
+    li.className = 'item';
+    li.innerHTML = `
+      <div>
+        <strong>${escapeHtml(c.name)}</strong><div class="meta">${c.phone || ''} • ${c.email || ''}</div>
+      </div>
+      <div class="controls">
+        <button data-id="${c.id}" class="editCustBtn secondary">Edit</button>
+        <button data-id="${c.id}" class="delCustBtn danger">Delete</button>
+      </div>`;
+    list.appendChild(li);
+
+    const opt = document.createElement('option');
+    opt.value = c.id; opt.textContent = c.name;
+    select.appendChild(opt);
+  });
+}
+
+async function refreshServices() {
+  const { body } = await apiFetch('services');
+  const list = document.getElementById('servList');
+  const select = document.getElementById('apServ');
+  list.innerHTML = '';
+  select.innerHTML = '<option value="">-- select service --</option>';
+  body.forEach(s => {
+    const li = document.createElement('li');
+    li.className = 'item';
+    li.innerHTML = `
+      <div>
+        <strong>${escapeHtml(s.title)}</strong>
+        <div class="meta">${s.duration_min} min • £${s.price}</div>
+      </div>
+      <div class="controls">
+        <button data-id="${s.id}" class="editServBtn secondary">Edit</button>
+        <button data-id="${s.id}" class="delServBtn danger">Delete</button>
+      </div>`;
+    list.appendChild(li);
+
+    const opt = document.createElement('option');
+    opt.value = s.id; opt.textContent = s.title;
+    select.appendChild(opt);
+  });
+}
+
+async function refreshAppointments(date=null) {
+  let path = 'appointments';
+  if (date) path += '?date=' + encodeURIComponent(date);
+  const { body } = await apiFetch(path);
+  const list = document.getElementById('apList');
+  list.innerHTML = '';
+  body.forEach(a => {
+    const li = document.createElement('li');
+    li.className = 'item';
+    const customer = a.customer_name || a.customer_id;
+    const service = a.service_title || a.service_id;
+    li.innerHTML = `
+      <div>
+        <strong>${a.appointment_date} ${a.start_time}</strong>
+        <div class="meta">${customer} • ${service} • status: ${a.status}</div>
+      </div>
+      <div class="controls">
+        <button data-id="${a.id}" class="editApBtn secondary">Edit</button>
+        <button data-id="${a.id}" class="delApBtn danger">Delete</button>
+      </div>`;
+    list.appendChild(li);
+  });
+}
+
+/* escape minimal to avoid injecting values into DOM */
+function escapeHtml(s='') {
+  return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+/* ---------- CRUD actions for Customers ---------- */
+let editingCustomerId = null;
+document.getElementById('addCustBtn').addEventListener('click', async () => {
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  if (!name) return showNotice('custNotice', 'Name is required');
+  const { status, body } = await apiFetch('customers', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, phone })});
+  if (status === 201) {
+    document.getElementById('custName').value=''; document.getElementById('custPhone').value='';
+    await refreshCustomers(); showNotice('custNotice', 'Customer added');
+  } else {
+    showNotice('custNotice', body.error || 'Failed to add customer');
+  }
+});
+
+document.getElementById('custList').addEventListener('click', async (e) => {
+  if (e.target.matches('.editCustBtn')) {
+    const id = e.target.dataset.id;
+    const res = await apiFetch('customers/' + id);
+    if (res.status === 200) {
+      const c = res.body;
+      editingCustomerId = id;
+      document.getElementById('custName').value = c.name || '';
+      document.getElementById('custPhone').value = c.phone || '';
+      document.getElementById('addCustBtn').style.display='none';
+      document.getElementById('saveCustBtn').style.display='inline-block';
+      document.getElementById('cancelCustBtn').style.display='inline-block';
+    }
+  } else if (e.target.matches('.delCustBtn')) {
+    const id = e.target.dataset.id;
+    if (!confirm('Delete this customer and their appointments?')) return;
+    const res = await apiFetch('customers/' + id, { method:'DELETE' });
+    if (res.status === 200) { await refreshCustomers(); await refreshAppointments(); showNotice('custNotice','Customer deleted'); }
+    else showNotice('custNotice', res.body.error || 'Delete failed');
+  }
+});
+
+document.getElementById('saveCustBtn').addEventListener('click', async () => {
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  if (!name) return showNotice('custNotice','Name required');
+  const res = await apiFetch('customers/' + editingCustomerId, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, phone })});
+  if (res.status === 200) {
+    editingCustomerId = null;
+    document.getElementById('custName').value=''; document.getElementById('custPhone').value='';
+    document.getElementById('addCustBtn').style.display='inline-block';
+    document.getElementById('saveCustBtn').style.display='none';
+    document.getElementById('cancelCustBtn').style.display='none';
+    await refreshCustomers(); showNotice('custNotice','Customer updated');
+  } else showNotice('custNotice', res.body.error || 'Update failed');
+});
+
+document.getElementById('cancelCustBtn').addEventListener('click', () => {
+  editingCustomerId = null;
+  document.getElementById('custName').value=''; document.getElementById('custPhone').value='';
+  document.getElementById('addCustBtn').style.display='inline-block';
+  document.getElementById('saveCustBtn').style.display='none';
+  document.getElementById('cancelCustBtn').style.display='none';
+});
+
+/* ---------- CRUD for Services ---------- */
+let editingServiceId = null;
+
+document.getElementById('addServBtn').addEventListener('click', async () => {
+  const title = document.getElementById('servTitle').value.trim();
+  const duration_min = parseInt(document.getElementById('servDuration').value,10);
+  const price = parseFloat(document.getElementById('servPrice').value);
+  if (!title) return showNotice('servNotice','Service title required');
+  if (!(duration_min>0)) return showNotice('servNotice','Duration must be positive');
+  if (isNaN(price)) return showNotice('servNotice','Price must be a number');
+  const res = await apiFetch('services', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title, duration_min, price })});
+  if (res.status === 201) {
+    document.getElementById('servTitle').value=''; document.getElementById('servDuration').value=''; document.getElementById('servPrice').value='';
+    await refreshServices(); showNotice('servNotice','Service added');
+  } else showNotice('servNotice', res.body.error || 'Add failed');
+});
+
+document.getElementById('servList').addEventListener('click', async (e) => {
+  if (e.target.matches('.editServBtn')) {
+    const id = e.target.dataset.id;
+    const res = await apiFetch('services/' + id);
+    if (res.status === 200) {
+      editingServiceId = id;
+      document.getElementById('servTitle').value = res.body.title || '';
+      document.getElementById('servDuration').value = res.body.duration_min || '';
+      document.getElementById('servPrice').value = res.body.price || '';
+      document.getElementById('addServBtn').style.display='none';
+      document.getElementById('saveServBtn').style.display='inline-block';
+      document.getElementById('cancelServBtn').style.display='inline-block';
+    }
+  } else if (e.target.matches('.delServBtn')) {
+    const id = e.target.dataset.id;
+    if (!confirm('Delete this service and related appointments?')) return;
+    const res = await apiFetch('services/' + id, { method:'DELETE' });
+    if (res.status === 200) { await refreshServices(); await refreshAppointments(); showNotice('servNotice','Service deleted'); }
+    else showNotice('servNotice', res.body.error || 'Delete failed');
+  }
+});
+
+document.getElementById('saveServBtn').addEventListener('click', async () => {
+  const title = document.getElementById('servTitle').value.trim();
+  const duration_min = parseInt(document.getElementById('servDuration').value,10);
+  const price = parseFloat(document.getElementById('servPrice').value);
+  if (!title) return showNotice('servNotice','Service title required');
+  if (!(duration_min>0)) return showNotice('servNotice','Duration must be positive');
+  if (isNaN(price)) return showNotice('servNotice','Price must be a number');
+  const res = await apiFetch('services/' + editingServiceId, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title, duration_min, price })});
+  if (res.status === 200) {
+    editingServiceId = null;
+    document.getElementById('servTitle').value=''; document.getElementById('servDuration').value=''; document.getElementById('servPrice').value='';
+    document.getElementById('addServBtn').style.display='inline-block';
+    document.getElementById('saveServBtn').style.display='none';
+    document.getElementById('cancelServBtn').style.display='none';
+    await refreshServices(); showNotice('servNotice','Service updated');
+  } else showNotice('servNotice', res.body.error || 'Update failed');
+});
+
+document.getElementById('cancelServBtn').addEventListener('click', () => {
+  editingServiceId = null;
+  document.getElementById('servTitle').value=''; document.getElementById('servDuration').value=''; document.getElementById('servPrice').value='';
+  document.getElementById('addServBtn').style.display='inline-block';
+  document.getElementById('saveServBtn').style.display='none';
+  document.getElementById('cancelServBtn').style.display='none';
+});
+
+/* ---------- CRUD for Appointments ---------- */
+let editingApptId = null;
+
+function getTimeValue() {
+  // prefer native time input if present and non-empty, else fallback text input
+  const tNative = document.getElementById('apTime').value;
+  if (tNative) return tNative;
+  const tText = document.getElementById('apTimeText').value.trim();
+  if (tText) return tText;
+  return '';
+}
+
+function normalizeTime(t) {
+  // if user typed "2:12 PM", attempt to convert to 24-hour "14:12"
+  const m = t.match(/^(\d{1,2}):(\d{2})(?:\s*([AaPp][Mm]))?$/);
+  if (!m) return t; // return as-is (server will validate)
+  let hh = parseInt(m[1],10), mm = m[2], ampm = m[3];
+  if (ampm) {
+    ampm = ampm.toUpperCase();
+    if (ampm === 'PM' && hh < 12) hh = hh + 12;
+    if (ampm === 'AM' && hh === 12) hh = 0;
+  }
+  hh = hh.toString().padStart(2,'0');
+  return `${hh}:${mm}`;
+}
+
+document.getElementById('addApBtn').addEventListener('click', async () => {
+  const customerId = document.getElementById('apCust').value;
+  const serviceId = document.getElementById('apServ').value;
+  const appointment_date = document.getElementById('apDate').value;
+  let start_time = getTimeValue();
+  start_time = normalizeTime(start_time);
+
+  if (!customerId) return showNotice('apNotice','Select a customer');
+  if (!serviceId) return showNotice('apNotice','Select a service');
+  if (!appointment_date) return showNotice('apNotice','Select a date (YYYY-MM-DD)');
+  if (!start_time) return showNotice('apNotice','Enter a time (HH:MM)');
+
+  const res = await apiFetch('appointments', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ customerId, serviceId, appointment_date, start_time }) });
+  if (res.status === 201) {
+    document.getElementById('apDate').value=''; document.getElementById('apTime').value=''; document.getElementById('apTimeText').value='';
+    await refreshAppointments(appointment_date); showNotice('apNotice','Appointment booked');
+  } else {
+    showNotice('apNotice', res.body.error || 'Booking failed', 6000);
+  }
+});
+
+document.getElementById('filterBtn').addEventListener('click', () => {
+  const date = document.getElementById('filterDate').value;
+  refreshAppointments(date || null);
+});
+document.getElementById('allBtn').addEventListener('click', () => refreshAppointments());
+
+document.getElementById('apList').addEventListener('click', async (e) => {
+  if (e.target.matches('.editApBtn')) {
+    const id = e.target.dataset.id;
+    const res = await apiFetch('appointments/' + id);
+    if (res.status === 200) {
+      const a = res.body;
+      editingApptId = id;
+      // populate form
+      document.getElementById('apCust').value = a.customer_id || a.customerId || '';
+      document.getElementById('apServ').value = a.service_id || a.serviceId || '';
+      document.getElementById('apDate').value = a.appointment_date || '';
+      // show time in appropriate input
+      if (supportsInputType('time')) {
+        document.getElementById('apTime').value = a.start_time || '';
+      } else {
+        document.getElementById('apTimeText').value = a.start_time || '';
+      }
+      document.getElementById('addApBtn').style.display='none';
+      document.getElementById('saveApBtn').style.display='inline-block';
+      document.getElementById('cancelApBtn').style.display='inline-block';
+      window.scrollTo({ top:0, behavior:'smooth' });
+    }
+  } else if (e.target.matches('.delApBtn')) {
+    const id = e.target.dataset.id;
+    if (!confirm('Delete this appointment?')) return;
+    const res = await apiFetch('appointments/' + id, { method:'DELETE' });
+    if (res.status === 200) { await refreshAppointments(); showNotice('apNotice','Appointment deleted'); }
+    else showNotice('apNotice', res.body.error || 'Delete failed');
+  }
+});
+
+document.getElementById('saveApBtn').addEventListener('click', async () => {
+  const customerId = document.getElementById('apCust').value;
+  const serviceId = document.getElementById('apServ').value;
+  const appointment_date = document.getElementById('apDate').value;
+  let start_time = getTimeValue();
+  start_time = normalizeTime(start_time);
+
+  if (!customerId) return showNotice('apNotice','Select a customer');
+  if (!serviceId) return showNotice('apNotice','Select a service');
+  if (!appointment_date) return showNotice('apNotice','Select a date (YYYY-MM-DD)');
+  if (!start_time) return showNotice('apNotice','Enter a time (HH:MM)');
+
+  const res = await apiFetch('appointments/' + editingApptId, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ customerId, serviceId, appointment_date, start_time })});
+  if (res.status === 200) {
+    editingApptId = null;
+    document.getElementById('apDate').value=''; document.getElementById('apTime').value=''; document.getElementById('apTimeText').value='';
+    document.getElementById('addApBtn').style.display='inline-block';
+    document.getElementById('saveApBtn').style.display='none';
+    document.getElementById('cancelApBtn').style.display='none';
+    await refreshAppointments(); showNotice('apNotice','Appointment updated');
+  } else {
+    showNotice('apNotice', res.body.error || 'Update failed', 6000);
+  }
+});
+
+document.getElementById('cancelApBtn').addEventListener('click', () => {
+  editingApptId = null;
+  document.getElementById('apDate').value=''; document.getElementById('apTime').value=''; document.getElementById('apTimeText').value='';
+  document.getElementById('addApBtn').style.display='inline-block';
+  document.getElementById('saveApBtn').style.display='none';
+  document.getElementById('cancelApBtn').style.display='none';
+});
+
+/* ---------- Init ---------- */
+(async function init() {
+  await refreshCustomers();
+  await refreshServices();
+  await refreshAppointments();
+})();
+</script>
+</body>
+</html>

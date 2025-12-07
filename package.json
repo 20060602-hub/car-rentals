@@ -1,0 +1,22 @@
+{
+  "name": "barbershop-booking-json",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "migrate": "node migrate.js",
+    "test": "jest --runInBand"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+  "jest": "^29.6.1",
+  "supertest": "^7.0.0",
+  "nodemon": "^2.0.22"
+  }
+
+}
